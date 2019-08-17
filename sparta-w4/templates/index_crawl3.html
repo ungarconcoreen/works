@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Youtube Now </title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link href="https://fonts.googleapis.com/css?family=Stylish&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mystyle.css') }}">
+    <link rel="Stylesheet" type="text/css" href="{{ url_for('static', filename='css/wSelect.css') }}" />
+
+
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.0.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='css/wSelect.js') }}"></script>
+
+    <script>
+      function open_post_box() {
+        if ($('#post-box').css('display') == 'block') {
+          $('#post-box').hide();
+          $('#btn-post-box').text('Open the List');
+          $('#post-cards').show();
+        } else {
+          $('#post-box').show();
+          $('#btn-post-box').text('Close the List');
+          $('#post-cards').hide();
+        }
+      }
+      function posting() {
+        // 읽기
+        let url = $('#posting-url').val();
+        let country = $('#country-url').val();
+
+        // 우리가 크롬 콘솔창에서 썼던 그 코드!
+        $.ajax({
+          type: "POST", // POST 방식으로 요청하겠다.
+          url: "/post", // /post라는 url에 요청하겠다.
+          data: { url_give: url, c_type : country}, // 데이터를 주는 방법
+          success: function(response){ // 성공하면
+            if (response['result'] == 'success') {
+              alert('Loading Success!');
+              window.location.reload();
+            } else {
+              alert('서버 오류!')
+            }
+          }
+        })
+      }
+
+      function get_posting() {
+
+        $('#cards-box').empty('');
+        $.ajax({
+          type: "GET",
+          url: "/post",
+          data: {},
+          success: function(response){
+            let cards = response['articles'];
+            console.log(cards);
+            for (let i = 0 ; i < 10; i++) {
+              let url = cards[i]['url'];
+              let rank = cards[i]['rank'];
+              let video_link = cards[i]['video_link'];
+              let img_link = cards[i]['img_link'];
+              let title = cards[i]['title'];
+              let hits = cards[i]['hits'];
+
+              make_card(url,rank,video_link,img_link,title,hits)
+            }
+          }
+        })
+      }
+      function make_card(url,rank,video_link,img_link,title,hits) {
+        $('#post-cards').append('<div class="card">\
+            <img class="card-img-top" src="'+img_link+'" alt="Card image cap">\
+            <div class="card-body">\
+              <p class="card-text"> Rank '+rank+'</p>\
+              <a class="card-title" href="'+video_link+'" target="_blank">'+title+'</a>\
+              <p class="card-text comment">'+hits+'</p>\
+            </div>\
+          </div>');
+      }
+      $( document ).ready(function() {
+          $('#post-cards').html('');
+          get_posting();
+      });  
+    </script>
+</head>
+<body>
+    <div class="jumbotron feed-frame">
+      <h1 class="display-4"> Youtube Trends Now</h1>
+      <p class="lead">The most hot videos on earth! </p>
+      <hr class="my-4">
+      <p class="lead">
+        <button type="button" class="btn btn-primary" onclick="open_post_box()" id="btn-post-box">Open the List</button>
+      </p>
+    </div>
+    <div class="form-post" id="post-box">
+      <form>
+        <select id="country-url">
+          <option value="KR">KOREA</option>
+          <option value="US">USA</option>
+          <option value="FR">FRANCE</option>
+          <option value="JP">JAPAN</option>
+          <option value="BR">BRAZIL</option>
+          <option value="IN">INDIA</option>
+          <option value="ES">SPAIN</option>
+          <option value="UK" data-icon="{{ url_for('static', filename='img/UK.png')}}">England (United Kingdom)</option>
+        </select>
+        <button type="button" class="btn btn-primary" onclick="posting()">SEARCH</button>
+      </form>
+    </div>
+    <div class="card-columns card-post" id="post-cards">
+      <div class="card">
+        <img class="card-img-top" src="https://www.fodors.com/wp-content/uploads/2018/10/4_UltimateRome_PiazzaNavona-975x650.jpg" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">예를 들면 이렇게 카드가 나옵니다!!</h5>
+          <p class="card-text">여기에 기사 내용이 들어가겠죠</p>
+          <p class="card-text comment">여기엔 코멘트가 들어갑니다</p>
+        </div>
+      </div>
+      <div class="card">
+        <img class="card-img-top" src="https://www.fodors.com/wp-content/uploads/2018/10/4_UltimateRome_PiazzaNavona-975x650.jpg" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">긴 글 예시</h5>
+          <p class="card-text">여기에 기사 내용이 들어가겠죠</p>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

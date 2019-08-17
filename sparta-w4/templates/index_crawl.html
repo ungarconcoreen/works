@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>Youtube Now</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <!-- Jquery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+  <!-- JS -->		
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <!---<script src="../script/basic.js"></script>-->
+
+  <script>
+    window.onload=function(){
+        get_posting();
+    }
+
+    function get_posting() {
+      $('#cards-box').empty('');
+      $.ajax({
+        type: "GET",
+        video: "/post",
+        data: {},
+        success: function(response){
+          let cards = response['videos'];
+          for (let i = 0 ; i < cards.length; i++) {
+            let video = cards[i]['video'];
+            let image = cards[i]['image'];
+            let title = cards[i]['title'];
+            let hits = cards[i]['hits'];
+          }
+
+            make_card(video,comment);
+        }
+      })
+    }
+
+    function posting() {
+      // 읽기
+      let video = $('#posting-video').val();
+      let comment = $('#posting-comment').val();
+
+      // 우리가 크롬 콘솔창에서 썼던 그 코드!
+      $.ajax({
+        type: "POST", // POST 방식으로 요청하겠다.
+        video: "/post", // /post라는 video에 요청하겠다.
+        data: { video_give: video, comment_give: comment}, // 데이터를 주는 방법
+        success: function(response){ // 성공하면
+          if (response['result'] == 'success') {
+            alert('포스팅 성공!');
+            window.location.reload();
+          } else {
+            alert('서버 오류!')
+          }
+        }
+      })
+    }
+
+    function openclose() {
+      if ( $('#posting-box').css('display') == 'block' ) {
+        $('#posting-box').hide();
+        $('#btn-posting-box').text('포스팅 박스 열기')
+      } else {
+        $('#posting-box').show();
+        $('#btn-posting-box').text('포스팅 박스 닫기')
+      }
+    }
+
+  </script>
+
+  <style>
+
+   div.jumbotron {
+    width: 900px;
+    margin: auto;
+  }
+
+  div.card-columns{
+    width: 900px;
+    margin: 10px auto 0 auto;
+  }
+
+  div.form-post {
+   max-width: 500px;
+   padding: 2rem;
+   margin: 2rem auto;
+   border-color: #e9ecef;
+   border-radius: 0.3rem;
+   border: solid;
+ }
+
+ .comment {
+   color: blue;
+   font-weight: bold;
+ }
+
+ #posting-box {
+  display: none;
+ }
+
+</style>
+
+</head>
+<body>
+  <div class="jumbotron">
+    <h1 class="display-4">Youtube Now</h1>
+    <p class="lead">Trending Now in your country </p>
+    <hr class="my-4">
+    <p class="lead">
+      <button id="btn-posting-box" onclick="openclose()" type="button" class="btn btn-primary">포스팅 박스 열기</button>
+    </p>
+  </div>
+  <div id="posting-box" class="form-post">
+    <form>
+      <div class="form-group">
+        <label for="exampleFormControlInput1">Video video</label>
+        <input id="posting-video" class="form-control" placeholder="">
+      </div>
+      <div class="form-group">
+        <label for="exampleFormControlTextarea1">간단 코멘트</label>
+        <input id="posting-comment" class="form-control" placeholder="">
+      </div>
+      <button onclick="posting()" type="button" class="btn btn-primary">기사저장</button>
+    </form>
+  </div>
+  <div id="cards-box" class="card-columns card-post">
+    <div class="card">
+      <img class="card-img-top" src="https://www.fodors.com/wp-content/uploads/2018/10/4_UltimateRome_PiazzaNavona-975x650.jpg" alt="Card image cap">
+      <div class="card-body">
+        <h5 class="card-title">예를 들면 이렇게 카드가 나옵니다!!</h5>
+        <p class="card-text">여기에 기사 내용이 들어가겠죠</p>
+        <p class="card-text comment">여기엔 코멘트가 들어갑니다</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
